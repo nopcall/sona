@@ -1322,14 +1322,20 @@ async function loadAramggKiwiRecommendation(
 function getAramggSummaryLines(data: AramggChampionRecommendation): string[] {
   const stats = data.championStats
   return [
-    `总体胜率 ${formatRate(toNumber(stats?.win_rate))}`,
-    `登场 ${formatRate(toNumber(stats?.pick_rate))}`,
+    `总体胜率 ${formatRate(toOptionalNumber(stats?.win_rate))}`,
+    `登场 ${formatRate(toOptionalNumber(stats?.pick_rate))}`,
     `Tier ${stats?.tier || '-'}`,
   ]
 }
 
-function formatRate(value: number): string {
-  return Number.isFinite(value) ? `${(value * 100).toFixed(1)}%` : '-'
+function formatRate(value: number | null): string {
+  return value != null && Number.isFinite(value) ? `${(value * 100).toFixed(1)}%` : '-'
+}
+
+function toOptionalNumber(value: unknown): number | null {
+  if (value == null || value === '') return null
+  const numberValue = typeof value === 'number' ? value : Number(value)
+  return Number.isFinite(numberValue) ? numberValue : null
 }
 
 function toNumber(value: unknown): number {
